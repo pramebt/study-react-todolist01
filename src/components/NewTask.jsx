@@ -1,19 +1,22 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
 const NewTask = ({addTask }) => {
-  const [title, setTitle] = useState("");
-
+ // const [title, setTitle] = useState("");
+  const title = useRef()
+  const form = useRef()
   const submitForm = (e) => {
     e.preventDefault();
     console.log(title);
     const task = {
-        title,
-        date: new Date().toLocaleString()
+        title : title.current.value ,
+        date : new Date().toLocaleString()
     }
     addTask(task)
+
+    form.current.reset()
   };
   return (
-    <form onSubmit={submitForm}>
+    <form ref={form}onSubmit={submitForm}>
       <label htmlFor="title" className="text-lh text-gray-400">
         Add New Task
       </label>
@@ -27,8 +30,9 @@ const NewTask = ({addTask }) => {
           auto
           focus
           required
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          ref={title}
+        //   value={title}
+        //   onChange={(e) => setTitle(e.target.value)}
         />
         <button
           type="submit"
