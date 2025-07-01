@@ -109,7 +109,7 @@ const HomePage = () => {
         <Spinner />
       ) : (
         filteredTodos.length > 0 && (
-          <ul className="bg-gray-200 rounded-md shadow-sm p-4">
+          <ul className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-md shadow-sm p-4">
             {filteredTodos.map((todo, i) => {
               // Find the actual index in the original todos array
               const originalIndex = todos.findIndex(t => t === todo);
