@@ -54,12 +54,12 @@ const HomePage = () => {
 
   return (
     <>
-      { loading ? <Spinner/> : users.map((user, index) => (
+      {/* { loading ? <Spinner/> : users.map((user, index) => (
         <div key={index}>
           {user.id}
           {user.title}
         </div>
-      ))}
+      ))} */}
       <NewTask addTask={addTask} />
       {loading ? (
         <Spinner />
