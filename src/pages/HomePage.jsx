@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import NewTask from "../components/NewTask";
 import TodoItem from "../components/TodoItem";
 import Spinner from "../components/Spinner";
 import { toast } from "react-toastify";
+import { DiVim } from "react-icons/di";
 
 const HomePage = () => {
   const [todos, setTodos] = useState([]);
@@ -33,10 +34,34 @@ const HomePage = () => {
     toast.success("Task updated successfully!");
   };
 
+  const [users, setUsers] = useState([]);
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch("https://jsonplaceholder.typicode.com/todos");
+        const data = await res.json();
+        setUsers(data.slice(0, 10)); // Fetching only the first 10 users
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast.error("Failed to fetch tasks. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    getData();
+  }, [todos]);
+
   return (
     <>
+      { loading ? <Spinner/> : users.map((user, index) => (
+        <div key={index}>
+          {user.id}
+          {user.title}
+        </div>
+      ))}
       <NewTask addTask={addTask} />
-      { loading ? (
+      {loading ? (
         <Spinner />
       ) : (
         todos.length > 0 && (
