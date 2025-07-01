@@ -38,7 +38,7 @@ const HomePage = () => {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve();
-      }, 300);
+      }, 1000);
     });
   };
 
