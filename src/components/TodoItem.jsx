@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { MdDelete, MdEdit, MdAccessTime } from "react-icons/md";
+import { MdDelete, MdEdit, MdAccessTime, MdCheckCircle, MdRadioButtonUnchecked } from "react-icons/md";
 
 const TodoItem = (props) => {
   const dialog = useRef();
@@ -27,6 +27,7 @@ const TodoItem = (props) => {
       const task = {
         title: title,
         date: props.todo.date,
+        completed: props.todo.completed || false,
       };
       props.updateTask(task, props.id);
     } else {
@@ -35,30 +36,70 @@ const TodoItem = (props) => {
     closeModal();
   };
 
+  const toggleComplete = () => {
+    const updatedTask = {
+      ...props.todo,
+      completed: !props.todo.completed
+    };
+    props.updateTask(updatedTask, props.id);
+  };
+
+  const isCompleted = props.todo.completed || false;
+
   return (
     <>
-      <li className="group relative bg-white rounded-xl border border-amber-100 shadow-sm p-6 mt-4 first:mt-0 hover:shadow-lg hover:border-amber-200 transition-all duration-300">
+      <li className={`group relative bg-white rounded-xl border shadow-sm p-6 mt-4 first:mt-0 hover:shadow-lg transition-all duration-300 ${
+        isCompleted 
+          ? 'border-green-200 bg-green-50' 
+          : 'border-amber-100 hover:border-amber-200'
+      }`}>
         {/* Left side with number and content */}
         <div className="flex items-start gap-4">
           {/* Number badge */}
-          <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md">
+          <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center shadow-md ${
+            isCompleted 
+              ? 'bg-gradient-to-br from-green-400 to-green-600' 
+              : 'bg-gradient-to-br from-amber-400 to-orange-500'
+          }`}>
             <span className="text-white font-bold text-sm">{props.id + 1}</span>
           </div>
           
           {/* Content area */}
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-lg text-gray-800 mb-2 leading-tight">
+            <h3 className={`font-semibold text-lg mb-2 leading-tight break-words ${
+              isCompleted 
+                ? 'text-green-700 line-through' 
+                : 'text-gray-800'
+            }`}>
               {props.todo.title}
             </h3>
             <div className="flex items-center gap-2 text-sm text-amber-600">
-              <MdAccessTime className="w-4 h-4" />
-              <span>{props.todo.date}</span>
+              <MdAccessTime className="w-4 h-4 flex-shrink-0" />
+              <span className="truncate">{props.todo.date}</span>
             </div>
           </div>
         </div>
 
         {/* Action buttons - positioned absolutely */}
         <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          {/* Complete/Incomplete toggle */}
+          <button
+            onClick={toggleComplete}
+            type="button"
+            className={`p-2 rounded-lg transition-all duration-200 hover:scale-105 ${
+              isCompleted 
+                ? 'bg-green-100 text-green-600 hover:bg-green-200' 
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+            title={isCompleted ? "Mark as incomplete" : "Mark as complete"}
+          >
+            {isCompleted ? (
+              <MdCheckCircle className="w-5 h-5" />
+            ) : (
+              <MdRadioButtonUnchecked className="w-5 h-5" />
+            )}
+          </button>
+          
           <button
             onClick={() => openModal(true)}
             type="button"
@@ -78,7 +119,11 @@ const TodoItem = (props) => {
         </div>
 
         {/* Decorative accent line */}
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 to-orange-500 rounded-b-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div className={`absolute bottom-0 left-0 right-0 h-1 rounded-b-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
+          isCompleted 
+            ? 'bg-gradient-to-r from-green-400 to-green-600' 
+            : 'bg-gradient-to-r from-amber-400 to-orange-500'
+        }`}></div>
       </li>
 
       {/* Modal Dialog */}
