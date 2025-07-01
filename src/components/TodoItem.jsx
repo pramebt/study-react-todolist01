@@ -1,108 +1,149 @@
 import React, { useRef, useState } from "react";
-import { MdDelete, MdEdit } from "react-icons/md";
+import { MdDelete, MdEdit, MdAccessTime } from "react-icons/md";
+
 const TodoItem = (props) => {
   const dialog = useRef();
-  const [title,setTitle] = useState(props.todo.title)
+  const [title, setTitle] = useState(props.todo.title);
   const [editing, setEditing] = useState(false);
+
   const openModal = (isEditing) => {
     isEditing ? setEditing(true) : setEditing(false);
     dialog.current.showModal();
   };
+
   const closeModal = () => {
     dialog.current.close();
   };
+
   const clickOutsideModal = (e) => {
     if (e.target === dialog.current) {
       closeModal();
     }
   };
+
   const submitForm = (e) => {
     e.preventDefault();
     if (editing) {
       const task = {
         title: title,
-        date:props.todo.date,
+        date: props.todo.date,
       };
       props.updateTask(task, props.id);
-    }else{
+    } else {
       props.deleteTask(props.id);
     }
     closeModal();
   };
+
   return (
     <>
-      <li className="flex bg-white rounded shadow-sm p-4 mt-4 first:mt-0">
-        <div className="flex gap-x-4 mr-auto items-center">
-          <div className="h-6 w-6 rounded-full shadow-sm text-white text-sm bg-teal-400 text-center content-center">
-            {props.id + 1}
+      <li className="group relative bg-white rounded-xl border border-amber-100 shadow-sm p-6 mt-4 first:mt-0 hover:shadow-lg hover:border-amber-200 transition-all duration-300">
+        {/* Left side with number and content */}
+        <div className="flex items-start gap-4">
+          {/* Number badge */}
+          <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md">
+            <span className="text-white font-bold text-sm">{props.id + 1}</span>
           </div>
-          <div>
-            <p className="font-semibold">{props.todo.title}</p>
-            <p className="text-sm text-gray-400">{props.todo.date}</p>
+          
+          {/* Content area */}
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-lg text-gray-800 mb-2 leading-tight">
+              {props.todo.title}
+            </h3>
+            <div className="flex items-center gap-2 text-sm text-amber-600">
+              <MdAccessTime className="w-4 h-4" />
+              <span>{props.todo.date}</span>
+            </div>
           </div>
         </div>
-        <div className="flex items-center gap-x-2">
-          <button
-            onClick={() => openModal(false)}
-            type="button"
-            className="todo-btn"
-          >
-            <MdDelete />
-          </button>
+
+        {/* Action buttons - positioned absolutely */}
+        <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <button
             onClick={() => openModal(true)}
             type="button"
-            className="todo-btn"
+            className="p-2 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 hover:text-amber-700 transition-all duration-200 hover:scale-105"
+            title="Edit task"
           >
-            <MdEdit />
+            <MdEdit className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => openModal(false)}
+            type="button"
+            className="p-2 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-600 transition-all duration-200 hover:scale-105"
+            title="Delete task"
+          >
+            <MdDelete className="w-5 h-5" />
           </button>
         </div>
+
+        {/* Decorative accent line */}
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 to-orange-500 rounded-b-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       </li>
 
+      {/* Modal Dialog */}
       <dialog
         onClick={clickOutsideModal}
         ref={dialog}
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-md w-[480px]"
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-2xl w-[480px] bg-white border border-amber-200 shadow-2xl backdrop-blur-sm"
       >
-        <form onSubmit={submitForm} className="p-6">
-          <h3 className="font-semibold text-xl">
-            {editing ? "Edit Task" : "Do you want to Delete"}
-          </h3>
-          <div className="mt-2">
+        <form onSubmit={submitForm} className="p-8">
+          {/* Modal Header */}
+          <div className="mb-6">
+            <h3 className="font-bold text-2xl text-gray-800 mb-2">
+              {editing ? "Edit Task" : "Delete Task"}
+            </h3>
+            <div className="w-12 h-1 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full"></div>
+          </div>
+
+          {/* Modal Content */}
+          <div className="mb-8">
             {editing ? (
-              <input
-                type="text"
-                className="focus:outline-none w-full border rounded py-2 px-3"
-                maxLength={30}
-                placeholder="Type something here..."
-                auto
-                focus
-                required
-                
+              <div className="space-y-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Task Description
+                </label>
+                <input
+                  type="text"
+                  className="w-full border border-gray-300 rounded-xl py-4 px-4 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all duration-200 text-lg"
+                  maxLength={50}
+                  placeholder="Enter your task..."
+                  autoFocus
+                  required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-              />
+                />
+                <div className="text-sm text-gray-500 text-right">
+                  {title.length}/50 characters
+                </div>
+              </div>
             ) : (
-              "This will permanently delete this task."
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                <p className="text-red-700 font-medium">
+                  Are you sure you want to delete this task? This action cannot be undone.
+                </p>
+              </div>
             )}
           </div>
-          <div className="mt-12 text-end space-x-2">
+
+          {/* Modal Actions */}
+          <div className="flex justify-end gap-3">
             <button
               onClick={closeModal}
               type="button"
-              className="rounded border border-gray-200 px-3 py-2 hover:bg-gray-50"
+              className="px-6 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors duration-200 font-medium"
             >
-              Close
+              Cancel
             </button>
             <button
               type="submit"
               className={
                 editing
-                  ? "rounded bg-teal-500 px-3 py-2 text-white hover:bg-teal-600"
-                  : "rounded bg-red-500 px-3 py-2 text-white hover:bg-red-600"
+                  ? "px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
+                  : "px-6 py-3 rounded-xl bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
               }
             >
-              {editing ? "Confirm" : "Delete"}
+              {editing ? "Save Changes" : "Delete Task"}
             </button>
           </div>
         </form>
